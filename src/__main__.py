@@ -1,25 +1,20 @@
 import discord
 import os
-import random
+from discord.ext import commands
 from dotenv import load_dotenv
+import slash_commands.quote as quote_command
 
 load_dotenv()
-intents = discord.Intents.default()
-
-client = discord.Client(intents=intents)
 
 token = os.getenv('TOKEN')
+intents = discord.Intents.default()
+bot = commands.Bot(intents=intents)
 
-@client.event
+
+@bot.event
 async def on_ready():
-    print("Logged in as a bot {0.user}".format(client))
+    print("Logged in as a bot {0.user}".format(bot))
 
+quote_command.setup(bot)
 
-
-
-
-
-
-
-
-client.run(token)
+bot.run(token)
