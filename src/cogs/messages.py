@@ -19,8 +19,6 @@ class ReactionInteraction():
     async def trigger(self,message:discord.message.Message):
         for r in self.reactions:
             await message.add_reaction(r)
-        
-
 
 
 class MessageFilter(commands.Cog):
@@ -39,6 +37,7 @@ class MessageFilter(commands.Cog):
             r't+e+r+r+y+n+a+l+d+': ReactionInteraction(["6️⃣","7️⃣"]), 
             r't+e+r+r+y+|t+e+r+r+i+': ReactionInteraction(random.choice(["👋","👀","😸"])),
             r'u+n+i+v+e+r+s+e+': MessageInteraction("NOM NOM NOM"),
+            r'm+e+o+w+|m+r+p+': MessageInteraction("Oliver? 👀"),
             r'o+l+i+v+e+r+': ReactionInteraction(random.choice(["😘","❤️","❤️‍🩹"]))
         }
         

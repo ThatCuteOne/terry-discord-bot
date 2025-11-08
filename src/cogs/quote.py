@@ -11,7 +11,16 @@ from discord.ext import commands
 async def render_image(quote,quoter):
     image_in_bytes = await get_random_image()
     with Image.open(io.BytesIO(image_in_bytes)) as image:
-        await draw_text(image,f"{quote} - {quoter}")
+        await draw_text(image,f"{quote}\n- {quoter}")
+        buffer = io.BytesIO()
+        image.save(buffer, format='PNG')
+        buffer.seek(0)
+        return buffer
+
+async def render_dual_image(promt,promter,response,responder):
+    image_in_bytes = await get_random_image()
+    with Image.open(io.BytesIO(image_in_bytes)) as image:
+        await draw_dual_text(image,f"{promt}\n- {promter}",f"{response}\n- {responder}")
         buffer = io.BytesIO()
         image.save(buffer, format='PNG')
         buffer.seek(0)
@@ -39,11 +48,29 @@ async def get_wrapped_text(text: str, font: ImageFont.ImageFont,line_length: int
 
 async def draw_text(image,text):
         draw_object = ImageDraw.Draw(image)
-        font = await load_font(random.randint(80,150))
-        draw_text = await get_wrapped_text(text,font,1860)
+        font = await load_font(random.randint(80,150 - len(text)//5))
+        draw_text = await get_wrapped_text(text,font,1760)
         avg_color = image.resize((1, 1), resample=Image.BILINEAR).getpixel((0, 0))
         color = (255, 255, 255) if sum(avg_color) < sum((128, 128, 128)) else (0, 0, 0)
-        draw_object.text((960, 540), draw_text, fill=color, font=font,align="center",anchor="ms",stroke_width=5,stroke_fill=tuple((255 - rgb) for rgb in color))
+        draw_object.text((100, 100), draw_text, fill=color, font=font,align="center",anchor="la",stroke_width=5,stroke_fill=tuple((255 - rgb) for rgb in color))
+
+async def draw_dual_text(image,promt_text, response_text):
+        draw_object = ImageDraw.Draw(image)
+        font_size = random.randint(80,150 - (len(promt_text) + len(response_text))//5)
+        font = await load_font(font_size)
+        avg_color = image.resize((1, 1), resample=Image.BILINEAR).getpixel((0, 0))
+        color = (255, 255, 255) if sum(avg_color) < sum((128, 128, 128)) else (0, 0, 0)
+
+        draw_promt = await get_wrapped_text(promt_text,font,1760)
+        draw_response = await get_wrapped_text(response_text, font, 1760)
+        bb = font.getbbox(draw_promt, stroke_width=5, anchor="la")
+        probably_the_hight = bb[1] + bb[3]
+        print(bb)
+        lb = draw_promt.count("\n")
+
+        draw_object.text((100, 100), draw_promt, fill=color, font=font,align="left",anchor="la",stroke_width=5,stroke_fill=tuple((255 - rgb) for rgb in color))
+        draw_object.text((1860, 100 + probably_the_hight + lb * font_size), draw_response, fill=color, font=font,align="right",anchor="ra",stroke_width=5,stroke_fill=tuple((255 - rgb) for rgb in color))
+
 
 async def get_random_image():
     url = "https://picsum.photos/1920/1080"
@@ -77,6 +104,24 @@ class QuoteCog(commands.Cog):
                 quoter:str
             ):
             file = File(await render_image(quote,quoter),"meow.png")
+            await ctx.respond(file=file)
+    @discord.slash_command(name="test", description="Quote Anything or Anyone",guild_ids=["1434128644220911709"])
+    async def test(
+                self,
+                ctx: discord.ApplicationContext,
+            ):
+            file = File(await render_image("meow meow meow wiwi wi","astro"),"meow.png")
+            await ctx.respond(file=file)
+    @discord.slash_command(name="quote_response", description="Quote Anything or Anyone",guild_ids=["1434128644220911709"])
+    async def quote_response(
+                self,
+                ctx: discord.ApplicationContext,
+                promt:str,
+                promter:str,
+                response:str,
+                responder:str,
+            ):
+            file = File(await render_dual_image(promt,promter,response,responder),"meow.png")
             await ctx.respond(file=file)
 
 def setup(bot:Bot):
