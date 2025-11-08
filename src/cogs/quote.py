@@ -87,7 +87,7 @@ async def get_random_image():
 class QuoteCog(commands.Cog):
     def __init__(self,bot):
           self.bot = bot
-    @discord.slash_command(name="quote_user", description="Quote a User",guild_ids=["1434128644220911709"])
+    @discord.slash_command(name="quote_user", description="Quote a User")
     async def quote_user(
                 self,
                 ctx: discord.ApplicationContext,
@@ -96,7 +96,7 @@ class QuoteCog(commands.Cog):
             ):
             file = File(await render_image(quote,quoter.display_name),"meow.png")
             await ctx.respond(f"{quoter.mention}", allowed_mentions=discord.AllowedMentions(users=True),file=file)
-    @discord.slash_command(name="quote", description="Quote Anything or Anyone",guild_ids=["1434128644220911709"])
+    @discord.slash_command(name="quote", description="Quote Anything or Anyone")
     async def quote(
                 self,
                 ctx: discord.ApplicationContext,
