@@ -16,7 +16,7 @@ intents.message_content = True
 bot = commands.Bot(intents=intents)
 
 
-cogs = ['cogs.quote','cogs.messages']
+cogs = ['cogs.quote','cogs.messages','cogs.fun']
 
 def register_cogs():
     logger = logging.getLogger("Cog Registration")
