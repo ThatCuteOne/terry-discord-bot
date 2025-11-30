@@ -1,3 +1,5 @@
 .env
 *pycache*
 assets*
+botsettings.db
+myenv*
