@@ -31,6 +31,10 @@ async def get_answer():
             "*licks your face*",
             "*bonks you*",
             "*bites your toe*",
-            "*terry sounds*"
+            "*terry sounds*",
+            "*squeaks extremly cutely*",
+            "*farts*",
+            "*pounces on your knees*",
+            "*retracts into shell*"
       ]
       return random.choice(responses)
