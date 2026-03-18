@@ -21,6 +21,16 @@ async def render_dual_image(promt,promter,response,responder):
     image_in_bytes = await get_random_image()
     with Image.open(io.BytesIO(image_in_bytes)) as image:
         await draw_dual_text(image,f"{promt}\n- {promter}",f"{response}\n- {responder}")
+        await draw_text(image,f"{quote}\n- {quoter}")
+        buffer = io.BytesIO()
+        image.save(buffer, format='PNG')
+        buffer.seek(0)
+        return buffer
+
+async def render_dual_image(promt,promter,response,responder):
+    image_in_bytes = await get_random_image()
+    with Image.open(io.BytesIO(image_in_bytes)) as image:
+        await draw_dual_text(image,f"{promt}\n- {promter}",f"{response}\n- {responder}")
         buffer = io.BytesIO()
         image.save(buffer, format='PNG')
         buffer.seek(0)
@@ -105,14 +115,7 @@ class QuoteCog(commands.Cog):
             ):
             file = File(await render_image(quote,quoter),"meow.png")
             await ctx.respond(file=file)
-    @discord.slash_command(name="test", description="Quote Anything or Anyone",guild_ids=["1434128644220911709"])
-    async def test(
-                self,
-                ctx: discord.ApplicationContext,
-            ):
-            file = File(await render_image("meow meow meow wiwi wi","astro"),"meow.png")
-            await ctx.respond(file=file)
-    @discord.slash_command(name="quote_response", description="Quote Anything or Anyone",guild_ids=["1434128644220911709"])
+    @discord.slash_command(name="quote_response", description="Quote Anything or Anyone")
     async def quote_response(
                 self,
                 ctx: discord.ApplicationContext,
