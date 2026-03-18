@@ -17,15 +17,6 @@ async def render_image(quote,quoter):
         buffer.seek(0)
         return buffer
 
-async def render_dual_image(promt,promter,response,responder):
-    image_in_bytes = await get_random_image()
-    with Image.open(io.BytesIO(image_in_bytes)) as image:
-        await draw_dual_text(image,f"{promt}\n- {promter}",f"{response}\n- {responder}")
-        await draw_text(image,f"{quote}\n- {quoter}")
-        buffer = io.BytesIO()
-        image.save(buffer, format='PNG')
-        buffer.seek(0)
-        return buffer
 
 async def render_dual_image(promt,promter,response,responder):
     image_in_bytes = await get_random_image()
