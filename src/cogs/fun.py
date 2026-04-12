@@ -6,7 +6,7 @@ from discord.ext import commands
 class CommandCog(commands.Cog):
     def __init__(self,bot):
           self.bot = bot
-    @discord.slash_command(name="ask_terry", description="Ask Terry for their wisdom",guild_ids=["1434128644220911709"])
+    @discord.slash_command(name="ask_terry", description="Ask Terry for their wisdom")
     async def quote_user(
                 self,
                 ctx: discord.ApplicationContext,
