@@ -38,7 +38,8 @@ class MessageFilter(commands.Cog):
             r't+e+r+r+y+|t+e+r+r+i+': ReactionInteraction(random.choice(["👋","👀","😸"])),
             r'u+n+i+v+e+r+s+e+': MessageInteraction("NOM NOM NOM"),
             r'm+e+o+w+|m+r+p+': MessageInteraction("Oliver? 👀"),
-            r'o+l+i+v+e+r+': ReactionInteraction(random.choice(["😘","❤️","❤️‍🩹"]))
+            r'o+l+i+v+e+r+': ReactionInteraction(random.choice(["😘","❤️","❤️‍🩹"])),
+            r'b+l+u+b': ReactionInteraction(["🐙"])
         }
         
         # Check each pattern
