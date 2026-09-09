@@ -1,12 +1,16 @@
-import random
-import aiohttp
 import io
+import random
+from pathlib import Path
+
+import aiohttp
 import discord
 from discord import File
+from discord.ext import commands
 from discord.ext.commands import Bot
 from PIL import Image, ImageDraw, ImageFont
-from pathlib import Path
-from discord.ext import commands
+
+from cogs.settings import SettingsCog
+
 
 async def render_image(quote,quoter):
     image_in_bytes = await get_random_image()
@@ -77,17 +81,30 @@ async def get_random_image():
     url = "https://picsum.photos/1920/1080"
     if random.randint(0,1) == 1:
          url = f"https://picsum.photos/1920/1080?blur={random.randint(1,10)}"
-    async with aiohttp.ClientSession() as session:
-        async with session.get(url) as response:
-            if response.status == 200:
-                content = await response.read()
-                return content
-            else:
-                raise Exception(f"Failed to download image: {response.status}")
+    async with aiohttp.ClientSession() as session, session.get(url) as response:
+        if response.status == 200:
+            content = await response.read()
+            return content
+        else:
+            raise Exception(f"Failed to download image: {response.status}")
 
 class QuoteCog(commands.Cog):
-    def __init__(self,bot):
+    def __init__(self,bot:Bot):
           self.bot = bot
+
+
+    async def is_channel_allowed(self,ctx:discord.ApplicationContext):
+            settingsCog:SettingsCog = self.bot.get_cog("SettingsCog")
+            config = await settingsCog.settings.get_settings_for_guild(ctx.guild_id)
+            if config.quote_channel == -1:
+                 return True
+            if config.quote_channel != ctx.channel_id:
+                 await ctx.respond(f"{ctx.interaction.user.mention} quoting is only allowed in <#{config.quote_channel}>",ephemeral=True)
+                 return False
+            return True
+            
+
+         
     @discord.slash_command(name="quote_user", description="Quote a User")
     async def quote_user(
                 self,
@@ -95,6 +112,8 @@ class QuoteCog(commands.Cog):
                 quote:str,
                 quoter:discord.Member
             ):
+            if not await self.is_channel_allowed(ctx): return
+
             file = File(await render_image(quote,quoter.display_name),"meow.png")
             await ctx.respond(f"{quoter.mention}", allowed_mentions=discord.AllowedMentions(users=True),file=file)
     @discord.slash_command(name="quote", description="Quote Anything or Anyone")
@@ -104,6 +123,8 @@ class QuoteCog(commands.Cog):
                 quote:str,
                 quoter:str
             ):
+            if not await self.is_channel_allowed(ctx): return
+
             file = File(await render_image(quote,quoter),"meow.png")
             await ctx.respond(file=file)
     @discord.slash_command(name="quote_response", description="Quote Anything or Anyone")
@@ -115,6 +136,7 @@ class QuoteCog(commands.Cog):
                 response:str,
                 responder:str,
             ):
+            if not await self.is_channel_allowed(ctx): return
             file = File(await render_dual_image(promt,promter,response,responder),"meow.png")
             await ctx.respond(file=file)
 

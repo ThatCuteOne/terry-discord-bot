@@ -1,11 +1,12 @@
-from datetime import timedelta,datetime
-import re
-from typing import Union
-from discord.ext import commands
-import discord
 import random
+import re
+from datetime import datetime, timedelta
 
-class MessageInteraction():
+import discord
+from discord.ext import commands
+
+
+class MessageInteraction:
     def __init__(self,text, reply= True, cooldown:timedelta=timedelta(minutes=0)):
         self.text = text
         self.reply = reply
@@ -14,18 +15,17 @@ class MessageInteraction():
 
     def is_on_cooldown(self) -> bool:
         if self.last_used is None: return False
-        time_since_last = datetime.now() - self.last_used
-        if time_since_last > self.cooldown: return False
-        return True
+        time_since_last = datetime.now(datetime.timezone.utc) - self.last_used
+        return not time_since_last > self.cooldown
 
     async def trigger(self,message:discord.message.Message):
         if self.is_on_cooldown(): return
-        self.last_used = datetime.now()
+        self.last_used = datetime.now(datetime.timezone.utc)
         if self.reply:
             await message.reply(self.text)
         else:
             await message.channel.send(self.text)
-class ReactionInteraction():
+class ReactionInteraction:
     def __init__(self,reactions:list):
         self.reactions = reactions
     async def trigger(self,message:discord.message.Message):
@@ -35,7 +35,7 @@ class ReactionInteraction():
 
 class MessageFilter(commands.Cog):
 
-    def register_pattern(self,regex:str,interaction:Union[ReactionInteraction,MessageInteraction]):
+    def register_pattern(self,regex:str,interaction:ReactionInteraction | MessageInteraction):
         self.patterns[regex] = interaction
 
 

@@ -1,7 +1,7 @@
-import duckdb
 import json
-from pydantic import BaseModel, ValidationError
-from typing import List, Optional
+
+import duckdb
+from pydantic import BaseModel
 
 setting_types = {
     "quote_channel":{
@@ -17,11 +17,10 @@ setting_types = {
 
 class Config(BaseModel):
     quote_channel: int = -1
-    auto_thread_channels: List[int] = []
+    auto_thread_channels: list[int] = []
 
 
-class TerrySettings():
-
+class TerrySettings:
     def __init__(self):
         self.database = duckdb.connect("botsettings.db")
         self._init_database()
@@ -51,7 +50,7 @@ class TerrySettings():
         return Config()
 
     async def set_setting_for_guild(self,guild_id,key,value):
-        if key not in Config().model_dump().keys():
+        if key not in Config().model_dump():
             raise ValueError(f"{key} is not a valid setting")
         settings = await self.get_settings_for_guild(guild_id)
         settings_dict = settings.model_dump()
