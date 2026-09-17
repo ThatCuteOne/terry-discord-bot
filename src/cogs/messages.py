@@ -1,6 +1,6 @@
 import random
 import re
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 import discord
 from discord.ext import commands
@@ -15,7 +15,7 @@ class MessageInteraction:
 
     def is_on_cooldown(self) -> bool:
         if self.last_used is None: return False
-        time_since_last = datetime.now(datetime.timezone.utc) - self.last_used
+        time_since_last = datetime.now(timezone.utc) - self.last_used
         return not time_since_last > self.cooldown
 
     async def trigger(self,message:discord.message.Message):
