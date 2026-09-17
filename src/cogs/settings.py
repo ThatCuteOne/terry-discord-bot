@@ -1,17 +1,21 @@
+from typing import ClassVar
+
 import discord
-from discord.ext.commands import Bot
 from discord.ext import commands
-import settings 
+from discord.ext.commands import Bot
+
+import settings
 from settings import TerrySettings
+
 
 class SettingsCog(commands.Cog):
 
       command = discord.SlashCommandGroup("settings", "Terry Bot Settings :3")
       channel = command.create_subgroup("channel","Channel related settings")
-      channel_settings_single = []
-      channel_settings_list = []
+      channel_settings_single:ClassVar[list] = []
+      channel_settings_list:ClassVar[list]  = []
       settings_dict = settings.setting_types
-      for setting in settings_dict.keys():
+      for setting in settings_dict:
           if settings_dict[setting]["type"] == "channel":
             if settings_dict[setting]["native_type"] is list:
                   channel_settings_list.append(setting)
@@ -22,6 +26,7 @@ class SettingsCog(commands.Cog):
             self.bot = bot
             self.settings = TerrySettings()
       @channel.command(name="set")
+      @commands.has_permissions(administrator=True)
       async def channel_set(
                     self,
                     ctx: discord.ApplicationContext,
