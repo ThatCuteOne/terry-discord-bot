@@ -43,10 +43,12 @@ class ServersCog(commands.Cog):
             
             favicon:str = status_response.get("favicon")
             if favicon is not None:
+                # decode icon
                 favicon = favicon.split(",")[1]     
                 icon_bytes = base64.b64decode(favicon)
                 img = discord.File(io.BytesIO(icon_bytes), filename="icon.png")
             else:
+                # fallback image
                 image = Image.new('RGB', (64, 64), 'black')
                 draw = ImageDraw.Draw(image)
                 font = ImageFont.truetype("./assets/fonts/Monocraft.ttf", 56)
@@ -67,6 +69,7 @@ class ServersCog(commands.Cog):
             title = f"{ip}"
             player_info = f"{status_response.get('players').get('online')}/{status_response.get('players').get('max')}"
 
+            # format motd for discord
             motd = convert_raw_motd_to_markdown(status_response.get("description","A Minecraft Server"))
             motd_lines = motd.splitlines()
             content_length = max((len(row) for row in motd_lines), default=0)
