@@ -176,6 +176,7 @@ def loop_through_textlist(textlist:list,parentStyle:TextStyle)-> str:
 def process_text_component(textcomp:dict,parentStyle:TextStyle)-> str:
     result = ""
     text = textcomp.get("text")
+    if text is None: return "" # prevent non text component types
 
     style_copy = copy.deepcopy(parentStyle)
     textStyle = TextStyle.from_text_component(textcomp)
